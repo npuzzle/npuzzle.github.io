@@ -56,8 +56,21 @@ if( document.getElementById("quanto").value >= 3 && document.getElementById("qua
 	var breake = document.createElement('br');
 	breake.setAttribute("class", "espacoa");
 	document.getElementById("tabelas").appendChild(breake);
-	gerarPuzzle(matriz);
-	matria = matriz
+	for( var i = 0; i < matriz.length; i++ ){
+		for( var j = 0; j < matriz.length; j++ ){
+			var unidade = document.createElement('div');
+			unidade.innerHTML = matriz[i][j];
+			uHighlight(matriz.length, i, j, unidade);
+			unidade.setAttribute("class", "uTabelab");
+			document.getElementById("tabelas").appendChild(unidade);
+		}
+		var breake = document.createElement('div');
+		breake.setAttribute("class", "espacob");
+		breake.setAttribute("style", "display: table-row");
+		document.getElementById("tabelas").appendChild(breake);
+	}
+	//gerarPuzzle(matriz);
+	matria = matriz;
 }else{
 	var erra = document.createElement('div');
 	erra.setAttribute("class", "espacoa");
@@ -144,8 +157,22 @@ function uHighlight(n, x, y, elemento){
 	 || ( n*(x-1)+y == n*(pos[0]-1)+(pos[1]-1) && pos[1] != 0 )
 	 || ( n*(x-1)+y == n*(pos[0]-2)+pos[1] && pos[0] != 0 )
 	 || ( n*(x-1)+y == n*(pos[0])+pos[1] && pos[0] != n-1 )	){
+		elemento.style.cursor = "pointer";
+		if( n*(x-1)+y == n*(pos[0]-1)+(pos[1]+1) && pos[1] != n-1 )//Direita
+			elemento.onclick = movimentoRight;
+		else if( n*(x-1)+y == n*(pos[0]-1)+(pos[1]-1) && pos[1] != 0 )//Esquerda
+			elemento.onclick = movimentoLeft;
+		else if( n*(x-1)+y == n*(pos[0]-2)+pos[1] && pos[0] != 0 )//Cima
+			elemento.onclick = movimentoUp;
+		else//Baixo
+			elemento.onclick = movimentoDown;
 		elemento.style.backgroundColor="FABE8D";
 		elemento.style.color="FFFFFF";
+	}else{
+		elemento.style.backgroundColor="FFFFFF";
+		elemento.style.color="FABE8D";
+		elemento.style.cursor = "default";
+		elemento.onclick = "";
 	}
 }
 document.onkeydown = function(e){
@@ -184,21 +211,46 @@ document.onkeydown = function(e){
 			break;
 	}
 }
+function movimentoLeft(){
+	if( pos[1] > 0 ){
+		matria[ pos[0] ][ pos[1] ] = matria[ pos[0] ][ pos[1] - 1 ];
+		matria[ pos[0] ][ pos[1] - 1 ] = "";
+		pos[1]--;
+		gerarPuzzle(matria);
+	}
+}
+function movimentoUp(){
+	if( pos[0] > 0 ){
+		matria[ pos[0] ][ pos[1] ] = matria[ pos[0] - 1 ][ pos[1] ];
+		matria[ pos[0] - 1 ][ pos[1] ] = "";
+		pos[0]--;
+		gerarPuzzle(matria);
+	}
+}
+function movimentoRight(){
+	if( pos[1] < matria.length - 1){
+		matria[ pos[0] ][ pos[1] ] = matria[ pos[0] ][ pos[1] + 1 ];
+		matria[ pos[0] ][ pos[1] + 1 ] = "";
+		pos[1]++;
+		gerarPuzzle(matria);
+	}
+}
+function movimentoDown(){
+	if( pos[0] < matria.length - 1 ){
+		matria[ pos[0] ][ pos[1] ] = matria[ pos[0] + 1 ][ pos[1] ];
+		matria[ pos[0] + 1 ][ pos[1] ] = "";
+		pos[0]++;
+		gerarPuzzle(matria);
+	}
+}
 function gerarPuzzle(matriz){
-	naoMais("uTabelab");
-	naoMais("espacob");
 	for( var i = 0; i < matriz.length; i++ ){
 		for( var j = 0; j < matriz.length; j++ ){
-			var unidade = document.createElement('div');
-			unidade.innerHTML = matriz[i][j];
+			var q = matriz.length*(i)+j;
+			var unidade = document.getElementsByClassName("uTabelab")[ q ];
 			uHighlight(matriz.length, i, j, unidade);
-			unidade.setAttribute("class", "uTabelab");
-			document.getElementById("tabelas").appendChild(unidade);
+			unidade.innerHTML = matriz[i][j];
 		}
-		var breake = document.createElement('div');
-		breake.setAttribute("class", "espacob");
-		breake.setAttribute("style", "display: table-row");
-		document.getElementById("tabelas").appendChild(breake);
 	}
 }
 </script>
@@ -279,3 +331,4 @@ input, button {
 	</div>
 </body>
 </html>
+
