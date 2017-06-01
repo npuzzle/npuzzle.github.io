@@ -252,6 +252,19 @@ function gerarPuzzle(matriz){
 			unidade.innerHTML = matriz[i][j];
 		}
 	}
+	ifWin(matriz);
+}
+function ifWin(matriz){
+	for( var i = 0; i < matriz.length; i++ ){
+		for( var j = 0; j < matriz.length; j++ ){
+			if( i == matriz.length - 1 && j == matriz.length - 1 && matriz[i][j] != "" )
+				return false
+			if( ( (i < matriz.length - 1 || j < matriz.length - 1 ) && matriz[i][j] != matriz.length*(i)+j+1 ) )
+				return false
+		}
+	}
+	alert("GANHOU");
+	return true;
 }
 </script>
 <style>
@@ -331,4 +344,3 @@ input, button {
 	</div>
 </body>
 </html>
-
