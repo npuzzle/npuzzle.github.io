@@ -252,6 +252,7 @@ function gerarPuzzle(matriz){
 			unidade.innerHTML = matriz[i][j];
 		}
 	}
+	console.log("mexeu");
 	ifWin(matriz);
 }
 function ifWin(matriz){
@@ -263,6 +264,7 @@ function ifWin(matriz){
 				return false
 		}
 	}
+	clearInterval( timevar );
 	alert("GANHOU");
 	return true;
 }
