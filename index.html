@@ -6,6 +6,7 @@ var goTempo = false;
 var totalSeconds = 0;
 var timevar = setInterval(setTime, 1000);
 var pos = new Array(2);
+var lastpos = new Array(2);
 var matria;
 function criarTabela(){
 	naoMais("uTabelaa");
@@ -38,6 +39,8 @@ if( document.getElementById("quanto").value >= 3 && document.getElementById("qua
 				matriz[i][j] = "";
 				pos[0]=i;
 				pos[1]=j;
+				lastpos[0]=0;
+				lastpos[1]=0;
 			}
 			else
 				matriz[i][j] = ct;
@@ -69,13 +72,11 @@ if( document.getElementById("quanto").value >= 3 && document.getElementById("qua
 		breake.setAttribute("style", "display: table-row");
 		document.getElementById("tabelas").appendChild(breake);
 	}
+	addHis("Novo "+matriz.length+"x"+matriz.length, "C394D4");
 	//gerarPuzzle(matriz);
 	matria = matriz;
 }else{
-	var erra = document.createElement('div');
-	erra.setAttribute("class", "espacoa");
-	erra.innerHTML = "Insira um valor válido.";
-	document.getElementById("tabelas").appendChild(erra);
+	addHis("Insira um valor válido", "FF6767");
 	document.getElementById("titulo").innerHTML = "n^2-1 Puzzle";
 }
 }
@@ -258,14 +259,20 @@ function gerarPuzzle(matriz){
 function ifWin(matriz){
 	for( var i = 0; i < matriz.length; i++ ){
 		for( var j = 0; j < matriz.length; j++ ){
-			if( i == matriz.length - 1 && j == matriz.length - 1 && matriz[i][j] != "" )
+			if( i == matriz.length - 1 && j == matriz.length - 1 && matriz[i][j] != "" ){
+				progresso(matriz,i,j);
 				return false
-			if( ( (i < matriz.length - 1 || j < matriz.length - 1 ) && matriz[i][j] != matriz.length*(i)+j+1 ) )
+			}
+			if( ( (i < matriz.length - 1 || j < matriz.length - 1 ) && matriz[i][j] != matriz.length*(i)+j+1 ) ){
+				progresso(matriz,i,j);
 				return false
+			}
 		}
 	}
 	clearInterval( timevar );
-	alert("GANHOU");
+	lastpos[0]=i;
+	lastpos[1]=j;
+	addHis("Ganhou!", "59D69F");
 	return true;
 }
 function criaE(e){
@@ -274,6 +281,36 @@ function criaE(e){
 	if (keyCode == '13'){
 	  criarTabela();
 	}
+}
+window.onload = function() {
+	var historico = document.createElement('div');
+	for(var i=0; i<10; i++){
+		var elemento = document.createElement('div');
+		elemento.setAttribute("class", "historico");
+		elemento.innerHTML = "";
+		elemento.style.bottom  = 32 * i;
+		elemento.style.opacity = 1 - i/10;
+		historico.appendChild(elemento);
+	}
+	document.getElementsByClassName("historico")[0].appendChild(historico);
+};
+function addHis(msg, cor){
+	for(var i=10; i>1; i--){
+		document.getElementsByClassName("historico")[i].innerHTML = document.getElementsByClassName("historico")[i-1].innerHTML;
+		document.getElementsByClassName("historico")[i].style.color = document.getElementsByClassName("historico")[i-1].style.color;
+	}
+	document.getElementsByClassName("historico")[1].innerHTML = msg;
+	document.getElementsByClassName("historico")[1].style.color = cor;
+}
+function progresso(matriz, i, j){
+			if(matriz.length*(i)+j == matriz.length*(lastpos[0])+lastpos[1])
+				addHis("Estável", "C394D4");
+			else if(matriz.length*(i)+j > matriz.length*(lastpos[0])+lastpos[1])
+				addHis("Progresso", "7064FF");
+			else
+				addHis("Regresso", "FF6767");
+			lastpos[0]=i;
+			lastpos[1]=j;
 }
 </script>
 <style>
@@ -336,6 +373,16 @@ body{
 	color:C394D4;
 	font-family: "Arial";
 }
+.historico{
+	bottom:0%;
+	left:0%;
+	float:right;
+	position:fixed;
+	margin:20px;
+	font-size:28px;
+	color:C394D4;
+	font-family: "Arial";
+}
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
     color:#fefefe;
 }
@@ -348,6 +395,7 @@ input, button {
 	<input class="quanto" id="quanto" placeholder="Insira o tamanho" onkeypress="criaE()"></input>
 	<button class="bcria" onclick="criarTabela()">Criar</button>
 	<div id="tabelas" align="center"></div>
+	<div class="historico"></div>
 	<div class="tempo">
 		<label id="minutos">00</label>:<label id="segundos">00</label>
 	</div>
